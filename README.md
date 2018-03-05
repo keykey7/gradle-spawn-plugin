@@ -1,5 +1,5 @@
 # Gradle Spawn Plugin
-A plugin for the Gradle build system that allows spawning and detaching processes on unix systems.
+A plugin for the Gradle build system that allows spawning, detaching and terminating processes on unix systems.
 
 ## Usage
 
@@ -15,9 +15,8 @@ plugins {
 The plugin requires the native `kill` command on the system and access to the hidden pid filed of the JVM (Oracle or OpenJDK).
 
 ### Alternatives
-There are many better alternatives to using this plugin!
-Use the `wildfly-server` plugin if your are dealing with java container. Or use docker images wherever possible. Consider 
-spawning native processes as a last resort.
+There are many better alternatives to using this plugin, like the `bmuschko/gradle-cargo-plugin` if your are dealing 
+with java containers. Or use docker images wherever possible. Consider spawning native processes as a last resort.
 
 ## Tasks
 The plugin introduces two task types to your gradle build.
@@ -33,8 +32,6 @@ property    | Gradle default          | Type   | Description
 commandLine | - (mandatory)           | List\<String> | command to be spawned
 command     | -                       | String | alternative: space separated command
 environment | -                       | Map    | special environment variables
-configDir   | -                       | File   | directory if the configuration of the command. only used for up-to-date checks
-configFiles | -                       | List\<File> | alternative list of config files if configDir is not good enough
 waitFor     | -                       | Regex  | regular expression to await on the processes stdout/stderr before assuming it is successfully started
 waitForTimeout | 30000                | long   | milliseconds to wait for the `waitFor` expression at most
 pidFile*       | ${workingDir}/spawn.pid | File | Alternate location of PID (and instance) file
@@ -45,13 +42,20 @@ killallCommandLine* | -                  | List\<String> | recommended way of ki
 Sample usage:
 ```groovy
 task processStarted(type: SpawnTask) {
-	command "./somebinary ${arg1} arg2"
+	command "./somebinary arg1 arg2"
 	workingDir "build/native"
-	configDir "build/native/config"
 	waitFor "Server started successfully"
 	killallCommandLine "pkill", "-f", "somebinary .* arg2"
 }
 acceptanceTest.dependsOn processStarted
+```
+
+Up-to-date checks are honored in a sense that it will restart the process if an input changed:
+```groovy
+task execWithConfig(type: SpawnTask) {
+    inputs.dir "path/to/config"
+    command "somebinary --with-config"
+}
 ```
 
 ### Kill Task
@@ -66,3 +70,8 @@ task processStop(type: KillTask) {
 }
 acceptanceTest.finalizedBy processStop
 ```
+
+Killing a process has mutltiple steps:
+ * if the pid file exists: `kill $pid`
+ * after `$killTimeout`ms: `kill -9 $pid` and remove the pid file
+ * if `killallCommandLine` is defined, run it
