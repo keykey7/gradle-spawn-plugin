@@ -22,16 +22,6 @@ class SpawnTask extends KillTask {
 	@Input
 	Map<String, String> environment = new HashMap<>()
 
-	/** directory holding the configuration of the executable, only used for up-to-date checks */
-	@Optional
-	@InputDirectory
-	File configDir
-
-	/** files holding the configuration of the executable, only used for up-to-date checks */
-	@Optional
-	@InputFiles
-	Set<File> configFiles = new HashSet<>()
-
 	/**
 	 * after the process is spawned wait until this regex appears on stdout/stderr
 	 * not an @Input: simply a fancy sleep

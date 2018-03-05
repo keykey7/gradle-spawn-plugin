@@ -33,7 +33,7 @@ class KillTask extends DefaultTask {
 	@Internal
 	List<String> killallCommandLine
 
-	static final DEFAULT_PID_FILENAME = "spawn.pid"
+	static final DEFAULT_PID_FILENAME = "build/spawn/spawn.pid"
 
 	// NOT @OutputFile: kill task has no outputs
 	File getPidFile() {
