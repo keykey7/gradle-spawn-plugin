@@ -1,0 +1,39 @@
+plugins {
+	id 'groovy'
+	id 'java-gradle-plugin'
+}
+
+apply plugin: 'maven-publish'
+
+group 'ch.kk7.gradle'
+version '1.0.0'
+
+repositories {
+	jcenter()
+}
+
+dependencies {
+//	testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+//		exclude group: 'org.codehaus.groovy'
+//	}
+
+	testCompile gradleTestKit()
+	testCompile 'junit:junit:4.12'
+}
+
+publishing {
+	publications {
+		spawnPlugin(MavenPublication) {
+			from components.java
+		}
+	}
+}
+
+gradlePlugin {
+	plugins {
+		spawnPlugin {
+			id = 'ch.kk7.spawn'
+			implementationClass = 'ch.kk7.gradle.spawn.SpawnPlugin'
+		}
+	}
+}
