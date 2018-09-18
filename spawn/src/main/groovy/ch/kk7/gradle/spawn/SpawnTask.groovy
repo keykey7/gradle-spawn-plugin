@@ -37,6 +37,10 @@ class SpawnTask extends KillTask {
 	@Internal
 	File stdOutFile
 
+	SpawnTask() {
+		pidFile("${project.buildDir}/spawn/${getName()}.pid")
+	}
+
 	// spawn task needs an output, kill task does not
 	@OutputFile
 	File getPidFile() {

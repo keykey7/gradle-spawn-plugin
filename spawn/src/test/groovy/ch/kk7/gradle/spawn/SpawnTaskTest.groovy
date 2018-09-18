@@ -34,9 +34,6 @@ class SpawnTaskTest {
 		}
 	}
 
-	/**
-	 * we're not using tail -f since we want it to abort once the file is removed, which is (bug!) not the case on RHEL6
-	 */
 	private String command = "tail -f testfile.txt"
 
 	@Rule
@@ -57,7 +54,8 @@ class SpawnTaskTest {
 	}
 
 	private GradleRunner run(String gradleTask) {
-		String gradleFile = """// generated
+		String gradleFile = """
+			// generated
 			plugins {
 				id "ch.kk7.spawn"
 			}
@@ -98,7 +96,7 @@ class SpawnTaskTest {
 	@Test
 	void waitForWithoutNewline() {
 		File testFile = testProjectDir.newFile()
-		testFile.text = "no newline 1337 at the end"
+		testFile.text = "line1\nno newline 1337 at the end"
 		run("""
 			task startTail(type: SpawnTask) {
 				command "tail -f ${testFile}"
@@ -128,12 +126,13 @@ class SpawnTaskTest {
 			}
 			task killTail(type: KillTask) {
 				dependsOn startTail
+				kills startTail
 			}""").withArguments("killTail").build()
 		assert result.task(":startTail").outcome == TaskOutcome.SUCCESS
 		assert result.task(":killTail").outcome == TaskOutcome.SUCCESS
 
 		def result2 = run().withArguments("startTail").build()
-		assert new File(testProjectDir.root, SpawnTask.DEFAULT_PID_FILENAME).exists() // still there
+		assert new File(testProjectDir.root, "build").exists() // still there
 		assert result2.task(":startTail").outcome == TaskOutcome.SUCCESS // explicitly not UP_TO_DATE
 	}
 
@@ -145,7 +144,7 @@ class SpawnTaskTest {
 				command "${command}"
 				killallCommandLine "echo", "${killallFake}" // simulates our killall xxx command
 			}""").withArguments("startTail").build()
-		File pidFile = new File(testProjectDir.root, SpawnTask.DEFAULT_PID_FILENAME)
+		File pidFile = new File(testProjectDir.root, "build/spawn/startTail.pid")
 		assert pidFile.exists()
 		pidFile.delete()
 		def result2 = run().withArguments("startTail").build()
@@ -155,13 +154,12 @@ class SpawnTaskTest {
 
 	@Test
 	void restartedIfConfigChanged() {
-		String configFileName = "mySuperConfig.blupp"
-		File configFile = testProjectDir.newFile(configFileName)
+		File configFile = testProjectDir.newFile()
 		configFile.text = "config for first run"
 		run("""
 			task startTail(type: SpawnTask) {
 				command "${command}"
-				configFile "${configFileName}"
+				inputs.file "${configFile.name}"
 			}""").withArguments("startTail").build()
 
 		configFile.text = "config for SECOND run"
@@ -183,14 +181,12 @@ class SpawnTaskTest {
 
 	@Test
 	void specialWorkingDirLocation() {
-		// core of the test is that the pid also needs to create folders
-		String workDir = "my/work/dir"
 		run("""
 			task startTail(type: SpawnTask) {
 				command "${command}"
-				workingDir "${workDir}"
+				workingDir "${testProjectDir.newFolder()}"
 			}""").withArguments("startTail").build()
-		assert new File("${testProjectDir.root}/${workDir}/${SpawnTask.DEFAULT_PID_FILENAME}").exists()
+		assert new File(testProjectDir.root, "build/spawn/startTail.pid").exists()
 	}
 
 	@Test
@@ -199,5 +195,12 @@ class SpawnTaskTest {
 			task startTail(type: SpawnTask) {
 				command "nonexistentCmd"
 			}""").withArguments("startTail").buildAndFail()
+	}
+
+	@Test
+	void dieIfKillWithoutSpawn() {
+		run("""
+			task killSomething(type: KillTask)
+			""").withArguments("killSomething").buildAndFail()
 	}
 }

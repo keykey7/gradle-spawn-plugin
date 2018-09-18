@@ -1,6 +1,8 @@
 package ch.kk7.gradle.spawn
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -33,15 +35,21 @@ class KillTask extends DefaultTask {
 	@Internal
 	List<String> killallCommandLine
 
-	static final DEFAULT_PID_FILENAME = "build/spawn/spawn.pid"
-
 	// NOT @OutputFile: kill task has no outputs
 	File getPidFile() {
-		return pidFile ?: new File(workingDir, DEFAULT_PID_FILENAME)
+		return pidFile
 	}
 
 	void pidFile(String pidFile) {
 		this.pidFile = project.file(pidFile)
+	}
+
+	void kills(String spawnTaskName) {
+		kills(project.getTasksByName(spawnTaskName, false).first())
+	}
+
+	void kills(Task spawnTask) {
+		pidFile = spawnTask.getPidFile()
 	}
 
 	void killallCommandLine(String... arguments) {
@@ -54,6 +62,11 @@ class KillTask extends DefaultTask {
 
 	@TaskAction
 	void execKill() {
+		if (pidFile == null) {
+			throw new GradleException("Missing attribute 'pidFile': "+
+					"Either specify a task to be killed using `${getName()}.kills(spawnTask)` "+
+					"or a pid file directly via `${getName()}.pidFile(pathToPid)`")
+		}
 		killPid()
 		killAll()
 	}

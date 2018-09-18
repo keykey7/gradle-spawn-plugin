@@ -1,6 +1,0 @@
-bin
-out
-build
-.idea/
-.gradle/
-*.iml
