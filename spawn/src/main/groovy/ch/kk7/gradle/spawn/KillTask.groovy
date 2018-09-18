@@ -49,7 +49,9 @@ class KillTask extends DefaultTask {
 	}
 
 	void kills(Task spawnTask) {
-		pidFile = spawnTask.getPidFile()
+		pidFile = spawnTask.pidFile
+		killallCommandLine = spawnTask.killallCommandLine
+		workingDir = spawnTask.workingDir
 	}
 
 	void killallCommandLine(String... arguments) {
