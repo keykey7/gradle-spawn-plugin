@@ -1,0 +1,14 @@
+group 'ch.kk7'
+version '1.0-SNAPSHOT'
+
+buildscript {
+	dependencies {
+
+	}
+}
+
+wrapper {
+	gradleVersion = '4.10'
+	distributionType = Wrapper.DistributionType.ALL
+}
+
