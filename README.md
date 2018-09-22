@@ -1,6 +1,9 @@
 # Gradle Spawn Plugin
 A plugin for the Gradle build system that allows spawning, detaching and terminating processes on unix systems.
 
+[![Build Status](https://travis-ci.org/keykey7/gradle-spawn.svg?branch=master)](https://travis-ci.org/keykey7/gradle-spawn)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
+
 ## Usage
 
 ### Applying the plugin
@@ -10,13 +13,6 @@ plugins {
     id 'ch.kk7.spawn'
 }
 ```
-
-### Prerequisites
-The plugin requires the native `kill` command on the system and access to the hidden pid filed of the JVM (Oracle or OpenJDK).
-
-### Alternatives
-There are many better alternatives to using this plugin, like the `bmuschko/gradle-cargo-plugin` if your are dealing 
-with java containers. Or use docker images wherever possible. Consider spawning native processes as a last resort.
 
 ## Tasks
 The plugin introduces two task types to your gradle build, but doesn't add any explicit tasks itself.
@@ -81,3 +77,6 @@ Killing a process has mutltiple steps:
  * if the pid file exists: `kill $pid`
  * if the pid file exists after `$killTimeout`ms elapsed: `kill -9 $pid` and remove the pid file
  * if `killallCommandLine` is defined, run it
+
+### Limitations
+The plugin requires the native `kill` command on the system and access to the hidden pid filed of the JVM (Oracle or OpenJDK).
