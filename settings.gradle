@@ -1,19 +1,8 @@
-rootProject.name = 'kk7-gradle-plugins'
+rootProject.name = 'gradle-spawn'
 
-include 'spawn'
-
+enableFeaturePreview('STABLE_PUBLISHING')
 gradle.beforeProject { Project project ->
 	project.with {
-
-		// get password from environment if available
-		if (System.env['SIGNING_PASSWORD']) {
-			ext['signing.password'] = System.env['SIGNING_PASSWORD']
-		}
-		String sonarLogin = System.env['SONAR_LOGIN']
-		if (sonarLogin) {
-			System.setProperty("sonar.login", sonarLogin)
-		}
-
 		buildscript {
 			repositories {
 				maven {

@@ -1,0 +1,80 @@
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'org.ajoberstar.grgit'
+
+def isRelease = System.getProperty('release') != null
+def buildNumber = java.time.format.DateTimeFormatter.ofPattern('yyyyMMddHHmmss').format(grgit.head().dateTime)
+def buildPostfix = isRelease ? '' : '-SNAPSHOT'
+version "1.0.${buildNumber}${buildPostfix}"
+
+// com.gradle.plugin-publish
+pluginBundle {
+	website = 'https://github.com/keykey7/gradle-spawn-plugin'
+	vcsUrl = website + '.git'
+	description = 'Spawn and kill UNIX processes with up-to-date checks.'
+	tags = ['unix', 'spawn', 'fork', 'process', 'kill']
+//	plugins {
+//		spawnPlugin {
+//			// id is captured from java-gradle-plugin configuration
+//			// displayName = 'Gradle Spawn Plugin'
+//		}
+//	}
+}
+
+// maven-publish
+task srcJar(type: Jar) {
+	from sourceSets.main.allGroovy
+	classifier = 'src'
+}
+task docJar(type: Jar, dependsOn: groovydoc) {
+	from groovydoc.destinationDir
+	classifier = 'doc'
+}
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifact srcJar
+			artifact docJar
+			pom {
+				name = project.name
+				description = project.pluginBundle.description
+				url = project.pluginBundle.website
+				licenses {
+					license {
+						name = 'The Apache License, Version 2.0'
+						url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+					}
+				}
+			}
+		}
+	}
+}
+
+// bintray
+bintray {
+	user = System.getenv('BINTRAY_USER')
+	key = System.getenv('BINTRAY_TOKEN')
+	publications = project.publishing.publications.collect{ it.name }
+
+	// FIXME
+	dryRun = true
+	publish = !isRelease
+
+	pkg {
+		repo = isRelease ? 'kk7-mvn-release' : 'kk7-mvn-snapshot'
+		name = project.name
+		desc = 'Gradle Spawn Plugin'
+		vcsUrl = project.pluginBundle.vcsUrl
+		githubRepo = 'keykey7/gradle-spawn-plugin'
+		githubReleaseNotesFile = 'README.md'
+		licenses = ['Apache-2.0']
+		version {
+			name = project.version
+			released = new Date()
+			mavenCentralSync {
+				sync = false
+			}
+		}
+	}
+}

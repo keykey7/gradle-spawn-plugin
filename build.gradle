@@ -1,27 +1,36 @@
-buildscript {
-	dependencies {
-		classpath 'com.gradle.publish:plugin-publish-plugin:0.9.10'
-	}
+plugins{
+	id 'groovy'
+	id 'java-gradle-plugin'
+	id 'maven-publish'
+	id 'com.gradle.plugin-publish' version '0.10.0' apply false
+	id 'com.jfrog.bintray' version '1.8.4' apply false
+	id 'org.ajoberstar.grgit' version '2.3.0' apply false
 }
-
-//plugins {
-//	id 'groovy'
-//	id 'java-gradle-plugin'
-//}
-
-group 'ch.kk7'
-version '1.0-SNAPSHOT'
 
 wrapper {
 	gradleVersion = '4.10'
 	distributionType = Wrapper.DistributionType.ALL
 }
 
-subprojects {
-	apply plugin: 'groovy'
-	apply plugin: 'java-gradle-plugin'
-	dependencies {
-		testCompile gradleTestKit()
-		testCompile 'junit:junit:4.12'
+group 'ch.kk7'
+version '0.0.0-SNAPSHOT'
+
+dependencies {
+	testCompile gradleTestKit()
+	testCompile 'junit:junit:4.12'
+}
+
+gradlePlugin {
+	plugins {
+		spawnPlugin {
+			id = 'ch.kk7.spawn'
+			displayName = 'Gradle Spawn Plugin'
+			implementationClass = 'ch.kk7.gradle.spawn.SpawnPlugin'
+		}
 	}
 }
+
+// FIXME
+//if (System.getenv('CI')) {
+	apply from: 'release.gradle'
+//}
