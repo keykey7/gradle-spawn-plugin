@@ -15,7 +15,7 @@ import java.util.concurrent.TimeoutException
  * based on the idea of https://github.com/marc0der/gradle-spawn-plugin/
  */
 class SpawnTask extends KillTask {
-	@Internal
+	@Input
 	List<String> commandLine
 
 	@Optional

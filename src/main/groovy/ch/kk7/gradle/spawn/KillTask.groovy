@@ -6,7 +6,6 @@ import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-
 /**
  * Kill a process defined by its PID file. Will always fire (never up-to-date).
  * Optionally accepts a killall command, which is usefull to clean up in case of clean reinstallation without prior kill of an
@@ -21,7 +20,7 @@ class KillTask extends DefaultTask {
 	File pidFile = null
 
 	/** working dir of this process, mainly used within the SpawnTask */
-	@Input
+	@Internal
 	File workingDir = project.file('.')
 
 	/** timeout in ms after which we will send the kill -9 */
@@ -34,6 +33,12 @@ class KillTask extends DefaultTask {
 	 */
 	@Internal
 	List<String> killallCommandLine
+
+	// only here for up-to-date checks, we do not care about the content of this folder (therefore no @InputDirectory)
+	@Input
+	String getWorkingDirPath() {
+		return workingDir.absolutePath
+	}
 
 	// NOT @OutputFile: kill task has no outputs
 	File getPidFile() {
