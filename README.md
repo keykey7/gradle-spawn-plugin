@@ -1,7 +1,7 @@
 # Gradle Spawn Plugin
 A plugin for the Gradle build system that allows spawning, detaching and terminating processes on unix systems.
 
-[![Build Status](https://travis-ci.org/keykey7/gradle-spawn.svg?branch=master)](https://travis-ci.org/keykey7/gradle-spawn)
+[![Build Status](https://travis-ci.com/keykey7/gradle-spawn-plugin.svg?branch=master)](https://travis-ci.com/keykey7/gradle-spawn-plugin)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
 
 ## Usage
