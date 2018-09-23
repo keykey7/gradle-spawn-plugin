@@ -1,7 +1,7 @@
 # Gradle Spawn Plugin
 A plugin for the Gradle build system that allows spawning, detaching and terminating processes on unix systems.
 
-[![Build Status](https://travis-ci.org/keykey7/gradle-spawn.svg?branch=master)](https://travis-ci.org/keykey7/gradle-spawn)
+[![Build Status](https://travis-ci.com/keykey7/gradle-spawn-plugin.svg?branch=master)](https://travis-ci.com/keykey7/gradle-spawn-plugin)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
 
 ## Usage
@@ -18,21 +18,29 @@ plugins {
 The plugin introduces two task types to your gradle build, but doesn't add any explicit tasks itself.
 
 ### Spawn Task
-The Spawn Task will bring a given command in a running state. If configured correctly, it will not spawn a second instance but can
-still determine if the previously running instance died.
+The Spawn Task will bring a given command in a running state and put it into background. 
+If configured correctly, it will not spawn a second instance but can still determine if the previously running instance died. 
+A simple setup looks like:
+```groovy
+task ping(type: SpawnTask) {
+    command "ping localhost"
+}
+```
 
 Spawn Task extends the Kill Task, since it might need to kill before launching a new process in case its configuration changed.
+A full example:
 
 ```groovy
 task processStarted(type: SpawnTask) {
-    // command to be spawned (List<String>)
+    // mandatory command to be spawned (List<String>)
     // alternative: command "commandToRun with arguments"
     commandLine "commandToRun", "with", "arguments"
     
-    // special environment variables (Map)
+    // special environment variables for the new process (Map)
     environment ENV_KEY: "ENV_VALUE"
     
     // regular expression to await on the processes stdout/stderr before assuming it is successfully started
+    // this let's you block the task until a service is ready and put it in background at this point
     waitFor "something within the [Ll]ogs?"
     
     // maximum wait time in milliseconds for the `waitFor` expression to match
@@ -43,12 +51,13 @@ task processStarted(type: SpawnTask) {
     
     workingDir "another/process/base/dir"
     
-    // milliseconds before killing the process the hard way
+    // milliseconds before killing the process the hard way (kill -9)
     killTimeout 5000
     
     // recommended way of killing the process if the PID was lost (like `killall` or `pkill`). 
     // Try to avoid sideffects as `killall java` might not be a good idea.
     killallCommandLine "pkill", "-f", "somebinary .* arg2"
+    killallCommandLine "bash", "-c", "kill -9 \$(lsof -t -i:8080 -sTCP:LISTEN)"
     
     // use normal gradle inputs to let it fail the up-to-date checks
     // which triggers a kill+relaunch of the process

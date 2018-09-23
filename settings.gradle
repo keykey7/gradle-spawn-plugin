@@ -1,4 +1,4 @@
-rootProject.name = 'gradle-spawn'
+rootProject.name = 'gradle-spawn-plugin'
 
 enableFeaturePreview('STABLE_PUBLISHING')
 gradle.beforeProject { Project project ->
