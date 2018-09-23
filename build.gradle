@@ -2,9 +2,9 @@ plugins{
 	id 'groovy'
 	id 'java-gradle-plugin'
 	id 'maven-publish'
-	id 'com.gradle.plugin-publish' version '0.10.0' apply false
-	id 'com.jfrog.bintray' version '1.8.4' apply false
-	id 'org.ajoberstar.grgit' version '2.3.0' apply false
+	id 'com.gradle.plugin-publish' version '0.10.0'
+	id 'com.jfrog.bintray' version '1.8.4'
+	id 'org.ajoberstar.grgit' version '2.3.0'
 }
 
 wrapper {
@@ -30,7 +30,4 @@ gradlePlugin {
 	}
 }
 
-// FIXME
-//if (System.getenv('CI')) {
-	apply from: 'release.gradle'
-//}
+apply from: 'gradle/release.gradle'
