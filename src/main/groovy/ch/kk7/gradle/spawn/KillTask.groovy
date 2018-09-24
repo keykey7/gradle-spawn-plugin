@@ -6,6 +6,7 @@ import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+
 /**
  * Kill a process defined by its PID file. Will always fire (never up-to-date).
  * Optionally accepts a killall command, which is usefull to clean up in case of clean reinstallation without prior kill of an
@@ -70,8 +71,8 @@ class KillTask extends DefaultTask {
 	@TaskAction
 	void execKill() {
 		if (pidFile == null) {
-			throw new GradleException("Missing attribute 'pidFile': "+
-					"Either specify a task to be killed using `${getName()}.kills(spawnTask)` "+
+			throw new GradleException("Missing attribute 'pidFile': " +
+					"Either specify a task to be killed using `${getName()}.kills(spawnTask)` " +
 					"or a pid file directly via `${getName()}.pidFile(pathToPid)`")
 		}
 		killPid()
