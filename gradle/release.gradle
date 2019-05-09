@@ -16,11 +16,11 @@ pluginBundle {
 // maven-publish
 task srcJar(type: Jar) {
 	from sourceSets.main.allSource
-	classifier = 'sources'
+	archiveClassifier = 'sources'
 }
 task docJar(type: Jar, dependsOn: groovydoc) {
 	from groovydoc.destinationDir
-	classifier = 'doc'
+	archiveClassifier = 'doc'
 }
 publishing {
 	publications {
