@@ -5,7 +5,7 @@ plugins{
 	id 'com.gradle.plugin-publish' version '0.10.1'
 	id 'com.jfrog.bintray' version '1.8.4'
 	id 'org.ajoberstar.grgit' version '3.1.1'
-	id 'com.github.ben-manes.versions' version '0.27.0' // task: dependencyUpdates
+	id 'com.github.ben-manes.versions' version '0.28.0' // task: dependencyUpdates
 }
 
 group 'ch.kk7'
@@ -13,7 +13,7 @@ version '0.0.0-SNAPSHOT'
 
 dependencies {
 	testImplementation gradleTestKit()
-	testImplementation 'junit:junit:4.12'
+	testImplementation 'junit:junit:4.13'
 }
 
 gradlePlugin {
