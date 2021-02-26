@@ -79,7 +79,7 @@ Starting a process performs the following steps:
 Whereas the `SpawnTask` will (kill and) launch a process, the `KillTask` will only remove it.
 Usefull as part of a cleanup step. A subset of the methods of the spawn task are supported.
 ```groovy
-task processStopped(type: SpawnTask) {
+task processStopped(type: KillTask) {
     // inherits properties from a given SpawnTask
     kills mySpawnTask
     
